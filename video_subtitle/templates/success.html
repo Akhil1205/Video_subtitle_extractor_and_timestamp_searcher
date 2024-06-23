@@ -1,9 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Success</title>
+    <title>Search Subtitles</title>
 </head>
 <body>
-    <h1>Video uploaded and processed successfully!</h1>
+    <h3>Video uploaded and processed successfully!</h3>
+    <h2>Search for the subtitle in the video below:</h2>
+    <p>Please search in capital letters!!!</p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+
+    {% if results_list %}
+        <h2>Search Results:</h2>
+        <ul>
+            {% for result in results_list %}
+                <li>{{ result }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 </body>
 </html>

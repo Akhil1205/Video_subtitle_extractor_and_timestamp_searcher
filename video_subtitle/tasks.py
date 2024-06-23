@@ -2,6 +2,7 @@ import os,boto3,subprocess
 from celery import shared_task
 from django.conf import settings
 from video_subtitle.models import SubtitlesTimeRange
+from django.conf import settings
 # @shared_task
 def process_video(video_path):
     try:
@@ -12,32 +13,29 @@ def process_video(video_path):
         with open("output1.srt", 'r') as file:
             lines = file.readlines()
         i = 0
-        start_time = ""
-        end_time = ""
+        duration = ""
         prev = ''
-        while i < len(lines):
+        while i < 14:
+            print(lines[i])
             if prev == '':
                 prev = 'time'
                 i+=1
-
             elif '-->' in lines[i]:
-                # Capture start and end time
-                start_end = lines[i].split(' --> ')
-                start_time = start_end[0].strip()
-                end_time = start_end[1].strip()
+                duration = lines[i]
                 i+=1
             else:
                 # Capture entire block as keyword and add to subtitles list
                 keyword_lines = ""
-                while i < len(lines) and lines[i]!= '\n':
+                while i < 14 and lines[i]!= '\n':
                     keyword_lines += lines[i].rstrip('\n')
-                    keyword_lines = keyword_lines.strip() + ' '
+                    keyword_lines = keyword_lines.strip()
                     i+=1
                 prev = ''
-                i+=1
                     
                 if keyword_lines:
-                    subtitle = SubtitlesTimeRange(keyword=keyword_lines,  duration= start_time + '-->' + end_time)
+                    import pdb; pdb.set_trace()
+                    print(f"Keyword: {keyword_lines}, Duration: {duration} -----------------------------")
+                    subtitle = SubtitlesTimeRange(video_name = settings.VIDEO_NAME, subtitle=keyword_lines,  duration= duration)
                     subtitle.save()
                 i+=1
 
@@ -51,3 +49,19 @@ def process_video(video_path):
             os.remove(video_path)
         if os.path.exists("output1.srt"):
             os.remove("output1.srt")
+
+def get_data_from_db(keyword):
+    try:
+        results = []
+        print(keyword)
+        for i in SubtitlesTimeRange.query(settings.VIDEO_NAME ,filter_condition= SubtitlesTimeRange.subtitle.contains(keyword), limit=5):
+            # Split the duration into start and end times
+            start_time, end_time = i.duration.split(' --> ')
+            # Append the result as a dictionary
+            results.append({'start_time': start_time.strip(), 'end_time': end_time.strip()})
+        
+        return results
+    except Exception as e:
+        print(f"Error fetching data from db: {e}")
+        return []
+
