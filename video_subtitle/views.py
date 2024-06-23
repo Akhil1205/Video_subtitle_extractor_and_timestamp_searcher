@@ -4,11 +4,13 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.shortcuts import render
 import os
-
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from .forms import VideoUploadForm, SearchForm
 from .tasks import process_video , get_data_from_db # Assuming you have a process_video function in your utils module
 
 # video_name = "default"
+@method_decorator(csrf_exempt, name='dispatch')
 class VideoUploadView(FormView):
     form_class = VideoUploadForm
     template_name = 'upload.html'
