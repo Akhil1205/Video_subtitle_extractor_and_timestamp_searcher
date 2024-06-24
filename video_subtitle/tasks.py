@@ -3,8 +3,10 @@ from celery import shared_task
 from django.conf import settings
 from video_subtitle.models import SubtitlesTimeRange
 from django.conf import settings
+from django.core.cache import cache
+
 # @shared_task
-def process_video(video_path):
+def process_video(video_path, token):
     try:
         print("------------------in celery---------------------------------")
         s3_client = boto3.client('s3',aws_access_key_id=settings.AWS_ACCESS_KEY_ID,aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,region_name=settings.AWS_S3_REGION_NAME)        
@@ -16,7 +18,6 @@ def process_video(video_path):
         duration = ""
         prev = ''
         while i < 14:
-            print(lines[i])
             if prev == '':
                 prev = 'time'
                 i+=1
@@ -31,11 +32,9 @@ def process_video(video_path):
                     keyword_lines = keyword_lines.strip()
                     i+=1
                 prev = ''
-                    
+                video_name = cache.get('video_name')
                 if keyword_lines:
-                    import pdb; pdb.set_trace()
-                    print(f"Keyword: {keyword_lines}, Duration: {duration} -----------------------------")
-                    subtitle = SubtitlesTimeRange(video_name = settings.VIDEO_NAME, subtitle=keyword_lines,  duration= duration)
+                    subtitle = SubtitlesTimeRange(user_token = token, video_name = video_name, subtitle=keyword_lines,  duration= duration)
                     subtitle.save()
                 i+=1
 
@@ -50,16 +49,15 @@ def process_video(video_path):
         if os.path.exists("output1.srt"):
             os.remove("output1.srt")
 
-def get_data_from_db(keyword):
+def get_data_from_db(keyword, token):
     try:
         results = []
-        print(keyword)
-        for i in SubtitlesTimeRange.query(settings.VIDEO_NAME ,filter_condition= SubtitlesTimeRange.subtitle.contains(keyword), limit=5):
-            # Split the duration into start and end times
+        video_name = cache.get('video_name')
+        for i in SubtitlesTimeRange.query(video_name, filter_condition= SubtitlesTimeRange.subtitle.contains(keyword)):
+            if i.user_token != token:
+                continue
             start_time, end_time = i.duration.split(' --> ')
-            # Append the result as a dictionary
             results.append({'start_time': start_time.strip(), 'end_time': end_time.strip()})
-        
         return results
     except Exception as e:
         print(f"Error fetching data from db: {e}")

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Subtitles of the video you uploaded</title>
+</head>
+<body>
+    <h2>Search Subtitle</h2>
+    <form id="searchForm">
+        <label for="subtitle">Subtitle:</label>
+        <input type="text" id="subtitle" name="subtitle" required><br><br>
+        <button type="submit">Search</button>
+    </form>
+
+    <div id="searchResults" style="margin-top: 20px;">
+        <h3>Search Results:</h3>
+        <ul id="resultsList"></ul>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const subtitleInput = document.getElementById('subtitle').value;
+            const formData = new FormData();
+            formData.append('keyword', subtitleInput);
+
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                alert('No authentication token found. Please log in first.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/video/search/', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization':token,
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Search failed');
+                }
+
+                const data = await response.json();
+                displayResults(data.result);
+
+                document.getElementById('statusMessage').textContent = 'Search completed successfully.';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('statusMessage').textContent = 'Search failed. Please try again.';
+            }
+        });
+
+        function displayResults(results) {
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = ''; 
+
+            results.forEach(result => {
+                const listItem = document.createElement('li');
+                listItem.textContent = JSON.stringify(result);
+                resultsList.appendChild(listItem);
+            });
+        }
+
+
+    </script>
+    <a href="/video/upload/" class="button">Go to Video upload Page</a><br><br>
+    <a href="/video/login/" class="button">Go to Login Page</a>
+</body>
+</html>

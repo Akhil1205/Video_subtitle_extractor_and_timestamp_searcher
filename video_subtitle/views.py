@@ -1,25 +1,32 @@
+from django.core.cache import cache
 from django.conf import settings
-from django.core.files.storage import default_storage
-from django.urls import reverse_lazy
-from django.views.generic.edit import FormView
 from django.shortcuts import render
 import os
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from .forms import VideoUploadForm, SearchForm
-from .tasks import process_video , get_data_from_db # Assuming you have a process_video function in your utils module
+from .tasks import process_video , get_data_from_db
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
+from rest_framework import status
+
 
 # video_name = "default"
 @method_decorator(csrf_exempt, name='dispatch')
-class VideoUploadView(FormView):
-    form_class = VideoUploadForm
-    template_name = 'upload.html'
-    success_url = reverse_lazy('success')
-
-    def form_valid(self, form):
-        video = self.request.FILES['video']
-        settings.VIDEO_NAME = video.name[:6]
-        video_path = os.path.join(settings.MEDIA_ROOT, settings.VIDEO_NAME)
+class VideoUploadView(APIView):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'video_subtitle/upload.html')
+    
+    def post(self, request , *args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token or not Token.objects.filter(key=token).exists():
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        video = request.FILES.get('video')
+        VIDEO_NAME = video.name[:10]
+        cache.set('video_name', VIDEO_NAME, timeout=2*60*60)
+        video_path = os.path.join(settings.MEDIA_ROOT, VIDEO_NAME)
         os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
         
         # Save the video file
@@ -28,18 +35,40 @@ class VideoUploadView(FormView):
                 destination.write(chunk)
         
         # Process the video after saving
-        process_video(video_path)
+        process_video(video_path, token)
         
-        return super().form_valid(form)
+        return Response({'message': 'Video uploaded successfully'}, status=status.HTTP_200_OK)
 
-class SearchView(FormView):
-    form_class = SearchForm
-    template_name = 'success.html'
+@method_decorator(csrf_exempt, name='dispatch')
+class SearchSubtitlesView(APIView):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'video_subtitle/search.html')
+    
+    def put(self, request , *args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token or not Token.objects.filter(key=token).exists():
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        keyword = request.data.get('keyword')
+        results_list = get_data_from_db(keyword, token)
+        
+        return Response({'result': results_list}, status=status.HTTP_200_OK)
 
-    def form_valid(self, form):
-        keyword = form.cleaned_data['keyword']
-        print(keyword)
-        import pdb; pdb.set_trace()
-        results_list = get_data_from_db(keyword)
-        # results_list =[1,2,3]
-        return render(self.request, self.template_name, {'form': form, 'results_list': results_list})
+
+class LoginView(APIView):
+    def get(self, request, *args, **kwargs):
+        return render (request, 'video_subtitle/login.html')
+    
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        username = data.get('username')
+        password = data.get('password')
+        
+        user = User.objects.filter(username=username, password=password).first()
+        
+        if user is not None:
+            # Check if the user already has a token, create one if not
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key})
+        else:
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)

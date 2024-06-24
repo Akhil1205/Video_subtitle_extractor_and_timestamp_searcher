@@ -17,7 +17,9 @@ class BaseModel(Model):
         read_capacity_units = 10
 
 class SubtitlesTimeRange(BaseModel):
+    
     video_name = UnicodeAttribute(hash_key=True)
     duration = UnicodeAttribute(range_key=True) 
     subtitle = UnicodeAttribute()
+    user_token = UnicodeAttribute()
 

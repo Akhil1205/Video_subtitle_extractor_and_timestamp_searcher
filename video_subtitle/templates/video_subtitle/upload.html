@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Video</title>
+</head>
+<body>
+    <h2>Upload Video</h2>
+    <form id="uploadForm">
+        <label for="video">Select Video:</label>
+        <input type="file" id="video" name="video" accept="video/*" required><br><br>
+        <button type="submit">Upload</button>
+    </form>
+
+    <div id="uploadStatus" style="margin-top: 20px;">
+        <p id="statusMessage"></p>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const videoInput = document.getElementById('video');
+            const videoFile = videoInput.files[0];
+            const formData = new FormData();
+            formData.append('video', videoFile);
+
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                alert('No authentication token found. Please log in first.');
+                return;
+            }
+            try {
+                
+                const response = await fetch('/video/upload/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': token
+                    },
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Video upload failed');
+                }
+
+                const data = await response.json();
+                document.getElementById('statusMessage').textContent = 'Upload successful: ' + data.message;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('statusMessage').textContent = 'Upload failed. Please try again.';
+            }
+        });
+
+    </script>
+    <a href="/video/search/" class="button">Go to search Page</a>
+    <a href="/video/login/" class="button">Go to Login Page</a>
+</body>
+</html>
