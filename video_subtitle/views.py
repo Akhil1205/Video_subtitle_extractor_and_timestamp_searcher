@@ -17,6 +17,7 @@ class VideoUploadView(APIView):
         return render(request, 'video_subtitle/upload.html')
     
     def post(self, request , *args, **kwargs):
+        import pdb;pdb.set_trace()
         token = request.headers.get('Authorization')
         if not token or not Token.objects.filter(key=token).exists():
             return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -43,6 +44,7 @@ class SearchSubtitlesView(APIView):
         return render(request, 'video_subtitle/search.html')
     
     def put(self, request , *args, **kwargs):
+        import pdb;pdb.set_trace()
         token = request.headers.get('Authorization')
         if not token or not Token.objects.filter(key=token).exists():
             return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
