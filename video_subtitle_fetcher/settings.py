@@ -135,7 +135,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CCEXTRACTOR_PATH = os.path.join(BASE_DIR, 'CCExtractor_win_portable', 'ccextractorwinfull.exe')
+# CCEXTRACTOR_PATH = os.path.join(BASE_DIR, 'CCExtractor_win_portable', 'ccextractorwinfull.exe')
+CCEXTRACTOR_PATH = 'ccextractor'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'video_subtitle/static/')
 MEDIA_URL = '/video_subtitle/static/'
