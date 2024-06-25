@@ -11,8 +11,6 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from rest_framework import status
 
-
-# video_name = "default"
 @method_decorator(csrf_exempt, name='dispatch')
 class VideoUploadView(APIView):
     def get(self, request, *args, **kwargs):
@@ -34,7 +32,7 @@ class VideoUploadView(APIView):
             for chunk in video.chunks():
                 destination.write(chunk)
         
-        # Process the video after saving
+        
         process_video(video_path, token)
         
         return Response({'message': 'Video uploaded successfully'}, status=status.HTTP_200_OK)
