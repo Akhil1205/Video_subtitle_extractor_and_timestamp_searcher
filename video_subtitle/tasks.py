@@ -4,8 +4,9 @@ from django.conf import settings
 from video_subtitle.models import SubtitlesTimeRange
 from django.conf import settings
 from django.core.cache import cache
+from pynamodb.exceptions import PutError
 
-# @shared_task
+@shared_task
 def process_video(video_path, token):
     try:
         print("------------------in celery---------------------------------")
@@ -17,7 +18,8 @@ def process_video(video_path, token):
         i = 0
         duration = ""
         prev = ''
-        while i < 14:
+        subtitles_bulk_update_list=[]
+        while i < len(lines):
             if prev == '':
                 prev = 'time'
                 i+=1
@@ -27,7 +29,7 @@ def process_video(video_path, token):
             else:
                 # Capture entire block as keyword and add to subtitles list
                 keyword_lines = ""
-                while i < 14 and lines[i]!= '\n':
+                while i < len(lines) and lines[i]!= '\n':
                     keyword_lines += lines[i].rstrip('\n')
                     keyword_lines = keyword_lines.strip()
                     i+=1
@@ -35,9 +37,16 @@ def process_video(video_path, token):
                 video_name = cache.get('video_name')
                 if keyword_lines:
                     subtitle = SubtitlesTimeRange(user_token = token, video_name = video_name, subtitle=keyword_lines,  duration= duration)
-                    subtitle.save()
+                    subtitles_bulk_update_list.append(subtitle)
                 i+=1
-
+        # Perform the bulk write operation
+        with SubtitlesTimeRange.batch_write() as batch:
+            for subtitle in subtitles_bulk_update_list:
+                try:
+                    batch.save(subtitle)
+                except PutError as e:
+                    print(f"Error writing item {subtitle.video_name}, {subtitle.subtitle}: {e}")
+                    
     except subprocess.CalledProcessError as e:
         print(f"Error during subtitle extraction: {e}")
     except Exception as e:
