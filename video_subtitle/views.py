@@ -17,7 +17,6 @@ class VideoUploadView(APIView):
         return render(request, 'video_subtitle/upload.html')
     
     def post(self, request , *args, **kwargs):
-        import pdb;pdb.set_trace()
         token = request.headers.get('Authorization')
         if not token or not Token.objects.filter(key=token).exists():
             return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -33,9 +32,9 @@ class VideoUploadView(APIView):
             for chunk in video.chunks():
                 destination.write(chunk)
         
-        
-        # process_video.delay(video_path, token)
-        a=test_celery.delay()
+        import pdb;pdb.set_trace()
+        process_video.delay(video_path, token)
+        # a=test_celery.delay()
         
         return Response({'message': 'Video uploaded successfully'}, status=status.HTTP_200_OK)
 

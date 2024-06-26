@@ -9,10 +9,9 @@ from pynamodb.exceptions import PutError
 @shared_task
 def process_video(video_path, token):
     try:
-        import pdb;pdb.set_trace()
         print("------------------in celery---------------------------------")
-        s3_client = boto3.client('s3',aws_access_key_id=settings.AWS_ACCESS_KEY_ID,aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,region_name=settings.AWS_S3_REGION_NAME)        
-        s3_client.upload_file(video_path, settings.AWS_STORAGE_BUCKET_NAME, os.path.basename(video_path))
+        # s3_client = boto3.client('s3',aws_access_key_id=settings.AWS_ACCESS_KEY_ID,aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,region_name=settings.AWS_S3_REGION_NAME)        
+        # s3_client.upload_file(video_path, settings.AWS_STORAGE_BUCKET_NAME, os.path.basename(video_path))
         subprocess.run([settings.CCEXTRACTOR_PATH,video_path, '-o', 'output1.srt'])
         with open("output1.srt", 'r') as file:
             lines = file.readlines()
@@ -61,7 +60,6 @@ def process_video(video_path, token):
 
 def get_data_from_db(keyword, token):
     try:
-        import pdb;pdb.set_trace()
         results = []
         video_name = cache.get('video_name')
         for i in SubtitlesTimeRange.query(video_name, filter_condition= SubtitlesTimeRange.subtitle.contains(keyword)):
