@@ -33,7 +33,7 @@ class VideoUploadView(APIView):
             for chunk in video.chunks():
                 destination.write(chunk)
         
-        process_video(video_path, token)
+        process_video.delay(video_path, token)
         
         return Response({'message': 'Video uploaded successfully'}, status=status.HTTP_200_OK)
 
