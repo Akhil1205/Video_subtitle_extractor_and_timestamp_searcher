@@ -34,7 +34,7 @@ class VideoUploadView(APIView):
                 destination.write(chunk)
         
         import pdb;pdb.set_trace()
-        process_video.delay(video_path, token)
+        process_video(video_path, token)
         # a=test_celery.delay()
         
         return Response({'message': 'Video uploaded successfully'}, status=status.HTTP_200_OK)
