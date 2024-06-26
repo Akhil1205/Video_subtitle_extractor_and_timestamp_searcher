@@ -24,7 +24,6 @@ class VideoUploadView(APIView):
         
         video = request.FILES.get('video')
         VIDEO_NAME = video.name[:10]
-        import pdb;pdb.set_trace()
         cache.set('video_name', VIDEO_NAME, timeout=2*60*60)
         video_path = os.path.join(settings.MEDIA_ROOT, VIDEO_NAME)
         os.makedirs(settings.MEDIA_ROOT, exist_ok=True)

@@ -135,8 +135,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# CCEXTRACTOR_PATH = os.path.join(BASE_DIR, 'CCExtractor_win_portable', 'ccextractorwinfull.exe')
-CCEXTRACTOR_PATH = 'ccextractor'
+# CCEXTRACTOR_PATH = os.path.join(BASE_DIR, 'CCExtractor_win_portable', 'ccextractorwinfull.exe')#for windows
+CCEXTRACTOR_PATH = 'ccextractor'#for linux
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'video_subtitle/static/')
 MEDIA_URL = '/video_subtitle/static/'
@@ -153,7 +153,7 @@ AWS_S3_VERITY = True
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_BROKER_URL = 'pyamqp://0.0.0.0:5672'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
