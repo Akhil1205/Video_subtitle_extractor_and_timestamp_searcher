@@ -73,3 +73,7 @@ def get_data_from_db(keyword, token):
     except Exception as e:
         print(f"Error fetching data from db: {e}")
         return []
+    
+@shared_task
+def test_celery():
+    return "akhil"

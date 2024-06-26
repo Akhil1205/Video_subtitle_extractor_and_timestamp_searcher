@@ -4,7 +4,7 @@ from django.shortcuts import render
 import os
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from .tasks import process_video , get_data_from_db
+from .tasks import process_video , get_data_from_db, test_celery
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -34,7 +34,8 @@ class VideoUploadView(APIView):
                 destination.write(chunk)
         
         import pdb;pdb.set_trace()
-        process_video.delay(video_path, token)
+        # process_video.delay(video_path, token)
+        a=test_celery.delay()
         
         return Response({'message': 'Video uploaded successfully'}, status=status.HTTP_200_OK)
 
