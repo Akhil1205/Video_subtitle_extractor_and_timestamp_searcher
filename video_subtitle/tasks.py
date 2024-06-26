@@ -18,6 +18,7 @@ def process_video(video_path, token):
         duration = ""
         prev = ''
         subtitles_bulk_update_list=[]
+        video_name = video_path[-10:]
         while i < len(lines):
             if prev == '':
                 prev = 'time'
@@ -33,7 +34,7 @@ def process_video(video_path, token):
                     keyword_lines = keyword_lines.strip()
                     i+=1
                 prev = ''
-                video_name = cache.get('video_name')
+                
                 if keyword_lines:
                     subtitle = SubtitlesTimeRange(user_token = token, video_name = video_name, subtitle=keyword_lines,  duration= duration)
                     subtitles_bulk_update_list.append(subtitle)
