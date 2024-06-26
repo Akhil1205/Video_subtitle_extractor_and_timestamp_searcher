@@ -4,7 +4,7 @@ from django.shortcuts import render
 import os
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from .tasks import process_video , get_data_from_db, test_celery
+from .tasks import process_video , get_data_from_db
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
