@@ -33,7 +33,6 @@ class VideoUploadView(APIView):
             for chunk in video.chunks():
                 destination.write(chunk)
         
-        import pdb;pdb.set_trace()
         process_video(video_path, token)
         # a=test_celery.delay()
         
