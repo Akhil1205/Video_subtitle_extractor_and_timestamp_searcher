@@ -3,7 +3,6 @@ from celery import shared_task
 from django.conf import settings
 from video_subtitle.models import SubtitlesTimeRange, TokenVideoMapping
 from django.conf import settings
-from django.core.cache import cache
 from pynamodb.exceptions import PutError
 
 @shared_task
