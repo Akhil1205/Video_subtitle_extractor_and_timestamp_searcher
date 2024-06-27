@@ -30,14 +30,20 @@ class VideoUploadView(APIView):
             for chunk in video.chunks():
                 destination.write(chunk)
         import pdb; pdb.set_trace()
-        for token_video_mapping in TokenVideoMapping.query(token):
-            if token_video_mapping.video_name == VIDEO_NAME:
-                return Response({'error': 'Video already uploaded'}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                # Update the video_name
-                token_video_mapping.update(actions=[
-                    TokenVideoMapping.video_name.set(VIDEO_NAME)
-                ])
+        existing_video_name =""
+        for i in TokenVideoMapping.query(token):
+            existing_video_name = i.video_name
+
+        if existing_video_name == VIDEO_NAME:
+            return Response({'message': 'Video already uploaded'}, status=status.HTTP_200_OK)
+        elif existing_video_name=="":
+            token_video_mapping=TokenVideoMapping(user_token = token, video_name = VIDEO_NAME)
+            token_video_mapping.save()
+        else:
+            for i in TokenVideoMapping.query(token):
+                i.video_name = VIDEO_NAME
+                i.save()
+        
         process_video(video_path, token)
         
         return Response({'message': 'Video uploaded successfully'}, status=status.HTTP_200_OK)

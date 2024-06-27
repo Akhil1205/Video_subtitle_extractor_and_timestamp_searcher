@@ -33,5 +33,6 @@ class SubtitlesTimeRange(BaseModel):
     user_token = UnicodeAttribute()
 
 class TokenVideoMapping(BaseModeUser):
-    video_name = UnicodeAttribute(range_key=True)
     user_token = UnicodeAttribute(hash_key=True)
+    video_name = UnicodeAttribute(range_key=True)
+    
