@@ -158,3 +158,6 @@ CELERY_RESULT_BACKEND = 'rpc://'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = None  # Disable Django's data upload size limit
+FILE_UPLOAD_MAX_MEMORY_SIZE = None  # Disable Django's file upload size limit
