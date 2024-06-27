@@ -159,5 +159,6 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = None  # Disable Django's data upload size limit
-FILE_UPLOAD_MAX_MEMORY_SIZE = None  # Disable Django's file upload size limit
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024  # 100 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024  # 100 MB
+
