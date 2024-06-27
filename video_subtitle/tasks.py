@@ -20,8 +20,8 @@ def process_video(video_path, token):
         subtitles_bulk_update_list=[]
         import pdb; pdb.set_trace()
         video_name  = ""
-        for i in TokenVideoMapping.query(token):
-            video_name = i.video_name
+        for user_video in TokenVideoMapping.query(token):
+            video_name = user_video.video_name
         while i < len(lines):
             if prev == '':
                 prev = 'time'
