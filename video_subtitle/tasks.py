@@ -61,7 +61,9 @@ def get_data_from_db(keyword, token):
     try:
         results = []
         import pdb; pdb.set_trace()
-        video_name = TokenVideoMapping.get(token).video_name
+        video_name =""
+        for token_video_mapping in TokenVideoMapping.query(token):
+            video_name = token_video_mapping.video_name
         for i in SubtitlesTimeRange.query(video_name, filter_condition= SubtitlesTimeRange.subtitle.contains(keyword)):
             if i.user_token != token:
                 continue
