@@ -21,10 +21,7 @@ class VideoUploadView(APIView):
             token = request.headers.get('Authorization')
             if not token or not Token.objects.filter(key=token).exists():
                 return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
-            print("bef")
-            import pdb;pdb.set_trace()
             video = request.FILES.get('video')
-            print("after")
             VIDEO_NAME = video.name
             video_path = os.path.join(settings.MEDIA_ROOT, VIDEO_NAME)
             os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
