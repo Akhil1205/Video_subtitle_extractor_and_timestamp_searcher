@@ -1,10 +1,10 @@
-from django.core.cache import cache
 from django.conf import settings
 from django.shortcuts import render
 import os
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .tasks import process_video , get_data_from_db
+from .models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -21,7 +21,7 @@ class VideoUploadView(APIView):
         if not token or not Token.objects.filter(key=token).exists():
             return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
         video = request.FILES.get('video')
-        VIDEO_NAME = video.name[:10]
+        VIDEO_NAME = video.name
         video_path = os.path.join(settings.MEDIA_ROOT, VIDEO_NAME)
         os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
         
@@ -29,8 +29,16 @@ class VideoUploadView(APIView):
         with open(video_path, 'wb+') as destination:
             for chunk in video.chunks():
                 destination.write(chunk)
-        
-        process_video.delay(video_path, token)
+        import pdb; pdb.set_trace()
+        token_video_mapping = TokenVideoMapping.get(token)
+        if token_video_mapping.video_name == VIDEO_NAME:
+            return Response({'error': 'Video already uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # Update the video_name
+            token_video_mapping.update(actions=[
+                TokenVideoMapping.video_name.set(VIDEO_NAME)
+            ])
+        process_video(video_path, token)
         
         return Response({'message': 'Video uploaded successfully'}, status=status.HTTP_200_OK)
 

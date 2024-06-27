@@ -1,7 +1,7 @@
 import os,boto3,subprocess
 from celery import shared_task
 from django.conf import settings
-from video_subtitle.models import SubtitlesTimeRange
+from video_subtitle.models import SubtitlesTimeRange, TokenVideoMapping
 from django.conf import settings
 from django.core.cache import cache
 from pynamodb.exceptions import PutError
@@ -18,7 +18,6 @@ def process_video(video_path, token):
         duration = ""
         prev = ''
         subtitles_bulk_update_list=[]
-        video_name = video_path[-10:]
         while i < len(lines):
             if prev == '':
                 prev = 'time'
@@ -61,7 +60,8 @@ def process_video(video_path, token):
 def get_data_from_db(keyword, token):
     try:
         results = []
-        video_name = cache.get('video_name')
+        import pdb; pdb.set_trace()
+        video_name = TokenVideoMapping.get(token).video_name
         for i in SubtitlesTimeRange.query(video_name, filter_condition= SubtitlesTimeRange.subtitle.contains(keyword)):
             if i.user_token != token:
                 continue
