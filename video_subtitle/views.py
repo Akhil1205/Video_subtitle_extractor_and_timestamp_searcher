@@ -29,13 +29,12 @@ class VideoUploadView(APIView):
         with open(video_path, 'wb+') as destination:
             for chunk in video.chunks():
                 destination.write(chunk)
-        import pdb; pdb.set_trace()
         existing_video_name =""
         for i in TokenVideoMapping.query(token):
             existing_video_name = i.video_name
 
         if existing_video_name == VIDEO_NAME:
-            return Response({'message': 'Video already uploaded'}, status=status.HTTP_200_OK)
+            return Response({'message': 'Video already exists with this name'}, status=status.HTTP_200_OK)
         elif existing_video_name=="":
             token_video_mapping=TokenVideoMapping(user_token = token, video_name = VIDEO_NAME)
             token_video_mapping.save()

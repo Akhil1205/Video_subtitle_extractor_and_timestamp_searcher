@@ -18,7 +18,6 @@ def process_video(video_path, token):
         duration = ""
         prev = ''
         subtitles_bulk_update_list=[]
-        import pdb; pdb.set_trace()
         video_name  = ""
         for user_video in TokenVideoMapping.query(token):
             video_name = user_video.video_name
@@ -64,7 +63,6 @@ def process_video(video_path, token):
 def get_data_from_db(keyword, token):
     try:
         results = []
-        import pdb; pdb.set_trace()
         video_name =""
         for token_video_mapping in TokenVideoMapping.query(token):
             video_name = token_video_mapping.video_name
