@@ -18,7 +18,6 @@ class VideoUploadView(APIView):
     
     def post(self, request , *args, **kwargs):
         try:
-            import pdb;pdb.set_trace()
             token = request.headers.get('Authorization')
             if not token or not Token.objects.filter(key=token).exists():
                 return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
