@@ -21,7 +21,7 @@ class VideoUploadView(APIView):
             token = request.headers.get('Authorization')
             if not token or not Token.objects.filter(key=token).exists():
                 return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
-            import pdb;pdb.set_trace()
+            
             video = request.FILES.get('video')
             VIDEO_NAME = video.name
             video_path = os.path.join(settings.MEDIA_ROOT, VIDEO_NAME)
@@ -31,6 +31,7 @@ class VideoUploadView(APIView):
             with open(video_path, 'wb+') as destination:
                 for chunk in video.chunks():
                     destination.write(chunk)
+            import pdb;pdb.set_trace()
             existing_video_name =""
             for i in TokenVideoMapping.query(token):
                 existing_video_name = i.video_name
