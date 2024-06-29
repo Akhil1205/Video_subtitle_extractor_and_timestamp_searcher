@@ -51,7 +51,7 @@
                 document.getElementById('statusMessage').textContent = 'Upload successful: ' + data.message;
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('statusMessage').textContent = 'Upload failed. Please try again.';
+                document.getElementById('statusMessage').textContent = 'Upload failed due to error:'+ data.message;
             }
         });
 

@@ -31,7 +31,6 @@ class VideoUploadView(APIView):
             with open(video_path, 'wb+') as destination:
                 for chunk in video.chunks():
                     destination.write(chunk)
-            import pdb;pdb.set_trace()
             existing_video_name =""
             for i in TokenVideoMapping.query(token):
                 existing_video_name = i.video_name
