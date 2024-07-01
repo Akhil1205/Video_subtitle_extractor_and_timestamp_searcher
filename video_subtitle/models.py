@@ -4,23 +4,22 @@ from pynamodb.attributes import UnicodeAttribute
 from django.conf import settings
 import boto3
 
-# session = boto3.Session(aws_access_key_id = settings.AWS_ACCESS_KEY_ID,aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY, region_name = settings.AWS_S3_REGION_NAME)
 class BaseModel(Model):
     class Meta:
         table_name = 'SubtitlesTimeRange'
         region = settings.AWS_S3_REGION_NAME
-        aws_access_key_id = settings.AWS_ACCESS_KEY_ID
-        aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
+        # aws_access_key_id = settings.AWS_ACCESS_KEY_ID
+        # aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
         # aws_session_token = session.get_credentials().token
-        write_capacity_units = 10
+        write_capacity_units = 20
         # Specifies the read capacity
-        read_capacity_units = 10
+        read_capacity_units = 20
 class BaseModeUser(Model):
     class Meta:
         table_name = 'TokenVideoMapping'
         region = settings.AWS_S3_REGION_NAME
-        aws_access_key_id = settings.AWS_ACCESS_KEY_ID
-        aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
+        # aws_access_key_id = settings.AWS_ACCESS_KEY_ID
+        # aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
         # aws_session_token = session.get_credentials().token
         write_capacity_units = 5
         # Specifies the read capacity
